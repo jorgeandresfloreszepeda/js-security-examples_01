@@ -1,0 +1,11 @@
+{
+  "name": "js-security-examples",
+  "version": "1.0.0",
+  "description": "A simple project to demonstrate JavaScript security issues",
+  "main": "script.js",
+  "scripts": {
+    "start": "echo 'npm run serve or use a web server like http-server'"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
