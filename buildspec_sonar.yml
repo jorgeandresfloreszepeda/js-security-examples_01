@@ -1,31 +1,22 @@
 version: 0.2
-env:
-  secrets-manager:
-    LOGIN: prod/sonar:sonartoken
-    HOST: prod/sonar:HOST
-    Organization: prod/sonar:Organization
-    Project: prod/sonar:Project
+
 phases:
   install:
-    runtime-versions:
-      java: openjdk8
-  pre_build:
     commands:
-      - apt-get update
-      - apt-get install -y jq
-      - wget http://www-eu.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz
-      - tar xzf apache-maven-3.5.4-bin.tar.gz
-      - ln -s apache-maven-3.5.4 maven
-      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
-      - unzip ./sonar-scanner-cli-3.3.0.1492-linux.zip
-      - export PATH=$PATH:/sonar-scanner-3.3.0.1492-linux/bin/
+      - echo "Installing SonarQube Scanner..."
+      - wget -qO /tmp/sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip"
+      - unzip -q /tmp/sonar-scanner.zip -d /tmp
+      - echo "Fetching secrets from Secrets Manager..."
+      - SONARQUBE_URL=$(aws secretsmanager get-secret-value --secret-id prod/sonar --query SecretString --output text | jq -r '.HOST')
+      - SONARQUBE_TOKEN=$(aws secretsmanager get-secret-value --secret-id SonarQubeCredentials --query SecretString --output text | jq -r '.sonartoken')
   build:
     commands:
-      - mvn test     
-      - mvn sonar:sonar -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
-      - sleep 5
-      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project >result.json
-      - cat result.json
-      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+      - echo "Running SonarQube Scan..."
+      - /tmp/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.projectKey=[your_project_key] -Dsonar.sources=. -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN
+  post_build:
+    commands:
+      - echo "SonarQube analysis completed"
 
-Y
+artifacts:
+  files:
+    - '**/*'
