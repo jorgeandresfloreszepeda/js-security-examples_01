@@ -1,22 +1,32 @@
 version: 0.2
 
+env:
+  secrets-manager:
+    SONARQUBE_TOKEN: prod/sonar:sonartoken
+    SONARQUBE_URL: prod/sonar:HOST
+    SONARQUBE_PROJECT: prod/sonar:Project
+    SONARQUBE_ORGANIZATION: prod/sonar:Organization
 phases:
   install:
+    runtime-versions:
+      java: corretto11
     commands:
-      - echo "Installing SonarQube Scanner..."
-      - wget -qO /tmp/sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip"
-      - unzip -q /tmp/sonar-scanner.zip -d /tmp
-      - echo "Fetching secrets from Secrets Manager..."
-      - SONARQUBE_URL=$(aws secretsmanager get-secret-value --secret-id prod/sonar --query SecretString --output text | jq -r '.HOST')
-      - SONARQUBE_TOKEN=$(aws secretsmanager get-secret-value --secret-id SonarQubeCredentials --query SecretString --output text | jq -r '.sonartoken')
+      - apt-get update
+      - apt-get install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
+      - mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+      - chmod +x /opt/sonar-scanner/bin/sonar-scanner
+      - export PATH="$PATH:/opt/sonar-scanner/bin"
+      - echo $JAVA_HOME
+      - echo $PATH
   build:
     commands:
       - echo "Running SonarQube Scan..."
-      - /tmp/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.projectKey=[your_project_key] -Dsonar.sources=. -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN
-  post_build:
-    commands:
-      - echo "SonarQube analysis completed"
-
+      - sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.organization=$SONARQUBE_ORGANIZATION
+      - sleep 5
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT > analysis.json
+      - cat analysis.json
 artifacts:
   files:
     - '**/*'
