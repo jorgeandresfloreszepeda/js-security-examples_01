@@ -1,0 +1,23 @@
+version: 0.2
+env:
+  variables:
+    VARIABLE_1: "Juanito"
+  secrets-manager:
+    SECRET_1: 123456
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+      java: corretto17
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Node.js code
+      - npm run build
+  post_build:
+    commands:
+      - echo Build completed on `date`
