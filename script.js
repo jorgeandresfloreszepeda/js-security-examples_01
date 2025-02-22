@@ -14,6 +14,8 @@ document
       user: "userpass",
     };
 
+    passwordvalidacion = "pepitopalotes";
+    
     if (users[username] === password) {
       // Security Issue #2: Client-Side Data Exposure
       // Storing session information in localStorage is not secure.
