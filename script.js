@@ -14,7 +14,7 @@ document
       user: "userpass",
     };
 
-    passwordvalidacion = "pepitopalotes";
+    let passwordvalidacion = "pepitopalotes";
     
     if (users[username] === password) {
       // Security Issue #2: Client-Side Data Exposure
