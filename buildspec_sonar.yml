@@ -52,3 +52,4 @@ phases:
 artifacts:
   files:
     - '**/*'
+    - /tmp/zap-report.html
