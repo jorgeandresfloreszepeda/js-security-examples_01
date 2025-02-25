@@ -44,7 +44,6 @@ phases:
       - zap-cli --zap-path /usr/bin quick-scan --self-contained --start-options '-config api.disablekey=true' http://localhost:80
       # Stop the server after the scan
       - kill $SERVER_PID
-
 artifacts:
   files:
     - '**/*'
