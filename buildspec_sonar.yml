@@ -23,9 +23,14 @@ phases:
       - echo $PATH  
       # Install a simple HTTP server (e.g., Python's http.server) and OWASP ZAP
       - apt-get install -y python3
-      - pip3 install owasp-zap-v2.11.0
+      - apt-get install -y snapd       # Install snapd to use Snap for ZAP installation
+      - snap install zaproxy --classic # Install OWASP ZAP via Snap
       - echo $JAVA_HOME
       - echo $PATH
+  pre_build:
+    commands:
+      - echo "Verifying ZAP installation..."
+      - /snap/bin/zaproxy -version     # Check ZAP version to confirm installation
   build:
     commands:
       - echo "Running SonarQube Scan..."
