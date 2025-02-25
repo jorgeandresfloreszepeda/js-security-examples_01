@@ -30,7 +30,7 @@ phases:
   pre_build:
     commands:
       - echo "Verifying ZAP installation..."
-      - zap.sh --version
+      - /usr/share/owasp-zap/zap.sh -cmd -version
   build:
     commands:
       # - echo "Running SonarQube Scan..."
@@ -45,7 +45,8 @@ phases:
       # Give the server a moment to start
       - sleep 2
       # Run OWASP ZAP scan against the running app
-      - zap.sh -cmd quick-scan --self-contained --start-options '-config api.disablekey=true' http://localhost:80
+      - /usr/share/owasp-zap/zap.sh -cmd -quickurl "http://localhost" -quickprogress -port 8090 -quickout "/tmp/zap-report.html" -quickprogress
+      - cat /tmp/zap-report.html
       # Stop the server after the scan
       - kill $SERVER_PID
 artifacts:
