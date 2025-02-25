@@ -47,8 +47,6 @@ phases:
       # Run OWASP ZAP scan against the running app
       - /usr/share/owasp-zap/zap.sh -cmd -quickurl "http://localhost" -quickprogress -port 8090 -quickout "/tmp/zap-report.html" -quickprogress
       - cat /tmp/zap-report.html
-      # Stop the server after the scan
-      - kill $SERVER_PID
 artifacts:
   files:
     - '**/*'
