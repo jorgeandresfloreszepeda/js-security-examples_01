@@ -33,7 +33,6 @@ phases:
       - sleep 5
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT > analysis.json
       - cat analysis.json
-        build:
       - echo "Starting dynamic testing..."
       # Start a simple web server in the background to serve the HTML/JS app
       - python3 -m http.server 80 &
