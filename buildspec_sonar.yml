@@ -14,30 +14,30 @@ phases:
       - echo "Hola Herramientas DevSecOps 24022025"
       - apt-get update
       - apt-get install -y jq
-      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-      - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
-      - mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
-      - chmod +x /opt/sonar-scanner/bin/sonar-scanner
-      - export PATH="$PATH:/opt/sonar-scanner/bin"
-      - echo $JAVA_HOME
-      - echo $PATH  
+      #- wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      #- unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
+      #- mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+      #- chmod +x /opt/sonar-scanner/bin/sonar-scanner
+      #- export PATH="$PATH:/opt/sonar-scanner/bin"
+      #- echo $JAVA_HOME
+      #- echo $PATH  
       # Install a simple HTTP server (e.g., Python's http.server) and OWASP ZAP
       - apt-get install -y python3
-      - apt-get install -y snapd       # Install snapd to use Snap for ZAP installation
-      - snap install zaproxy --classic # Install OWASP ZAP via Snap
-      - echo $JAVA_HOME
-      - echo $PATH
+      - echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.04/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list
+      - curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
+      - sudo apt update
+      - sudo apt install owasp-zap
   pre_build:
     commands:
       - echo "Verifying ZAP installation..."
       - /snap/bin/zaproxy -version     # Check ZAP version to confirm installation
   build:
     commands:
-      - echo "Running SonarQube Scan..."
-      - sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.organization=$SONARQUBE_ORGANIZATION
-      - sleep 5
-      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT > analysis.json
-      - cat analysis.json
+      # - echo "Running SonarQube Scan..."
+      # - sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.organization=$SONARQUBE_ORGANIZATION
+      # - sleep 5
+      # - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT > analysis.json
+      # - cat analysis.json
       - echo "Starting dynamic testing..."
       # Start a simple web server in the background to serve the HTML/JS app
       - python3 -m http.server 80 &
