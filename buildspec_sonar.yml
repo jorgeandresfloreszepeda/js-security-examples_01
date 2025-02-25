@@ -11,7 +11,7 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-      - echo "Hola ArqAdv 18022025"
+      - echo "Hola Herramientas DevSecOps 24022025"
       - apt-get update
       - apt-get install -y jq
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
@@ -19,6 +19,11 @@ phases:
       - mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
       - chmod +x /opt/sonar-scanner/bin/sonar-scanner
       - export PATH="$PATH:/opt/sonar-scanner/bin"
+      - echo $JAVA_HOME
+      - echo $PATH  
+      # Install a simple HTTP server (e.g., Python's http.server) and OWASP ZAP
+      - apt-get install -y python3
+      - pip3 install owasp-zap-v2.11.0
       - echo $JAVA_HOME
       - echo $PATH
   build:
@@ -28,6 +33,18 @@ phases:
       - sleep 5
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT > analysis.json
       - cat analysis.json
+        build:
+      - echo "Starting dynamic testing..."
+      # Start a simple web server in the background to serve the HTML/JS app
+      - python3 -m http.server 80 &
+      - SERVER_PID=$!
+      # Give the server a moment to start
+      - sleep 2
+      # Run OWASP ZAP scan against the running app
+      - zap-cli --zap-path /usr/bin quick-scan --self-contained --start-options '-config api.disablekey=true' http://localhost:80
+      # Stop the server after the scan
+      - kill $SERVER_PID
+
 artifacts:
   files:
     - '**/*'
