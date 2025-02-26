@@ -6,6 +6,10 @@
   "scripts": {
     "start": "echo 'npm run serve or use a web server like http-server'"
   },
-  "author": "Your Name",
-  "license": "MIT"
+  "author": "Herramientas DevSecOps",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^23.0.0"
+  }
+
 }
