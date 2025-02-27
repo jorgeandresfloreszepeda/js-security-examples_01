@@ -31,7 +31,7 @@ phases:
       # - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT > analysis.json
       # - cat analysis.json
       - echo "Running dynamic tests with Puppeteer..."
-      - npm test  # Runs test.js
+      - npm test test.js  # Runs test.js
 artifacts:
   files:
     - '**/*'
