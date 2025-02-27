@@ -1,11 +1,11 @@
 version: 0.2
 
-env:
-  secrets-manager:
-    SONARQUBE_TOKEN: prod/sonar:sonartoken
-    SONARQUBE_URL: prod/sonar:HOST
-    SONARQUBE_PROJECT: prod/sonar:Project
-    SONARQUBE_ORGANIZATION: prod/sonar:Organization
+# env:
+  # secrets-manager:
+  #   SONARQUBE_TOKEN: prod/sonar:sonartoken
+  #   SONARQUBE_URL: prod/sonar:HOST
+  #   SONARQUBE_PROJECT: prod/sonar:Project
+  #   SONARQUBE_ORGANIZATION: prod/sonar:Organization
 phases:
   install:
     runtime-versions:
