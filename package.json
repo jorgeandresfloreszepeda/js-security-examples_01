@@ -5,6 +5,7 @@
   "main": "script.js",
   "scripts": {
     "start": "echo 'npm run serve or use a web server like http-server'"
+    "test": "node test.js"
   },
   "author": "Herramientas DevSecOps",
   "license": "MIT",
