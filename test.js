@@ -2,6 +2,9 @@ const puppeteer = require("puppeteer");
 const http = require("http");
 const fs = require("fs");
 
+// Helper function for delay (for older Puppeteer versions)
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 (async () => {
   // Start a simple server to serve index.html
   const server = http.createServer((req, res) => {
@@ -42,14 +45,25 @@ const fs = require("fs");
   });
   const page = await browser.newPage();
 
+  // Check if waitForTimeout exists; fall back to delay if not
+  const wait = page.waitForTimeout || delay;
+
   try {
+    // Set up console listener early for XSS detection
+    let xssDetected = false;
+    page.on("console", (msg) => {
+      if (msg.text() === "XSS") {
+        xssDetected = true;
+      }
+    });
+
     // Test Case 1: Normal login
     console.log("Testing normal login...");
     await page.goto("http://localhost:8000");
     await page.type("#username", "admin");
     await page.type("#password", "password123");
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(1000); // Wait for DOM updates
+    await wait(1000); // Wait for DOM updates
     const normalMessage = await page.$eval("#message", (el) => el.textContent);
     console.log("Normal login result:", normalMessage);
     if (normalMessage !== "Logged in as admin") {
@@ -63,17 +77,11 @@ const fs = require("fs");
     await page.type("#username", xssPayload);
     await page.type("#password", "test");
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(1000);
+    await wait(1000); // Wait for DOM updates
 
-    // Check if the payload was executed (indicative of XSS)
-    let xssDetected = false;
-    await page.on("console", (msg) => {
-      if (msg.text() === "XSS") {
-        xssDetected = true;
-      }
-    });
+    // Check if XSS payload was executed or rendered
     const welcomeContent = await page.evaluate(
-      () => document.querySelector("h2")?.textContent
+      () => document.querySelector("h2")?.textContent || ""
     );
     console.log("Welcome message after XSS attempt:", welcomeContent);
     if (xssDetected || welcomeContent.includes(xssPayload)) {
@@ -88,7 +96,7 @@ const fs = require("fs");
     await page.type("#username", "user");
     await page.type("#password", "wrongpass");
     await page.click('button[type="submit"]');
-    await page.waitForTimeout(1000);
+    await wait(1000); // Wait for DOM updates
     const invalidMessage = await page.$eval("#message", (el) => el.textContent);
     console.log("Invalid login result:", invalidMessage);
     if (invalidMessage !== "Login failed") {
@@ -101,6 +109,6 @@ const fs = require("fs");
     process.exit(1); // Fail the build if tests fail
   } finally {
     await browser.close();
-    server.close();
+    server.close(() => console.log("Server closed."));
   }
 })();
