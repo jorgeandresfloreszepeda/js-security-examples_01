@@ -12,9 +12,9 @@ phases:
       java: corretto11
       nodejs: 18
     commands:
-      - echo "Hola ArqAdv 18022025"
-      - apt-get update
-      - apt-get install -y jq
+      - echo "Hola Herramientas DevSecOps 26022025"
+      # - apt-get update
+      # - apt-get install -y jq
       # - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
       # - unzip ./sonar-scanner-cli-5.0.1.3006-linux.zip
       # - mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
