@@ -64,7 +64,10 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await page.type("#password", "password123");
     await page.click('button[type="submit"]');
     await wait(1000); // Wait for DOM updates
-    const normalMessage = await page.$eval("#message", (el) => el.textContent);
+    const normalMessage = await page.evaluate(() => {
+      const el = document.querySelector("#message");
+      return el ? el.textContent : "";
+    });
     console.log("Normal login result:", normalMessage);
     if (normalMessage !== "Logged in as admin") {
       throw new Error("Normal login failed");
@@ -97,7 +100,10 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     await page.type("#password", "wrongpass");
     await page.click('button[type="submit"]');
     await wait(1000); // Wait for DOM updates
-    const invalidMessage = await page.$eval("#message", (el) => el.textContent);
+    const invalidMessage = await page.evaluate(() => {
+      const el = document.querySelector("#message");
+      return el ? el.textContent : "";
+    });
     console.log("Invalid login result:", invalidMessage);
     if (invalidMessage !== "Login failed") {
       throw new Error("Invalid login handling failed");
