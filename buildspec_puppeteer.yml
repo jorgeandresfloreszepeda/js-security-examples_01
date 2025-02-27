@@ -22,6 +22,7 @@ phases:
       - export PATH="$PATH:/opt/sonar-scanner/bin"
       - echo $JAVA_HOME
       - echo $PATH
+      - echo "Installing NPM"
       - npm install
   build:
     commands:
