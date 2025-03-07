@@ -33,6 +33,7 @@ phases:
       # - cat analysis.json
       - echo "Running dynamic tests with Puppeteer..."
       - npm test  # Runs test.js
+      - npx jest test2.js
 artifacts:
   files:
     - '**/*'

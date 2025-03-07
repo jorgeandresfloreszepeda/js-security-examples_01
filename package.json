@@ -9,8 +9,9 @@
   },
   "author": "Herramientas DevSecOps",
   "license": "MIT",
-  "dependencies": {
-    "puppeteer": "^23.0.0"
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "k6": "^0.0.0",
+    "puppeteer": "^24.3.0"
   }
-
 }
